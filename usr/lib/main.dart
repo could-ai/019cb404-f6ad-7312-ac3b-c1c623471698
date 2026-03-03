@@ -22,6 +22,37 @@ class MyApp extends StatelessWidget {
         '/': (context) => const MyHomePage(title: 'Home Page'),
         '/student': (context) => const StudentScreen(),
       },
+      // Handle unknown routes gracefully to prevent crashes or blank screens
+      onUnknownRoute: (settings) {
+        return MaterialPageRoute(
+          builder: (context) => Scaffold(
+            appBar: AppBar(
+              title: const Text('Page Not Found'),
+              backgroundColor: Theme.of(context).colorScheme.errorContainer,
+            ),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(
+                    '404 - Page Not Found',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  Text('Route "${settings.name}" does not exist.'),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pushReplacementNamed('/'),
+                    child: const Text('Go Home'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -58,11 +89,13 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text('You have pushed the button this many times:'),
             Text('$_counter', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 20),
-            ElevatedButton(
+            // Navigation button to the Student Profile
+            ElevatedButton.icon(
               onPressed: () {
                 Navigator.pushNamed(context, '/student');
               },
-              child: const Text('View Student Profile'),
+              icon: const Icon(Icons.person),
+              label: const Text('View Student Profile'),
             ),
           ],
         ),
